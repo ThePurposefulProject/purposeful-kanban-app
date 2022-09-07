@@ -31,9 +31,9 @@ const Login = () => {
                 margin='normal'
                 required
                 fullWidth
-                id='username'
-                label='Username'
-                name='username'
+                id='password'
+                label='Password'
+                name='password'
                 type='password'
                 disabled={loading} 
             />
