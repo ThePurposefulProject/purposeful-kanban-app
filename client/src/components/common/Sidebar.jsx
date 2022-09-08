@@ -1,8 +1,55 @@
-import React from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { Box, Drawer, List, IconButton, ListItemButton, Typography } from '@mui/material'
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined'
+import { useNavigate } from 'react-router-dom'
+import assets from '../../assets/index'
 
 const Sidebar = () => {
+    const user = useSelector((state) => state.user.value)
+    const navigate = useNavigate()
+    const sidebarWidth = 250
+
+    const logout = () => {
+        localStorage.removeItem('token')
+        navigate('/login')
+    }
+
     return (
-        <div>Sidebar</div>
+       <Drawer
+        container={window.document.body}
+        variant='permanent'
+        open={true}
+        sx={{
+            width: sidebarWidth,
+            height: '100vh',
+            '& > div': { borderRight: 'none' }
+        }}
+       >
+        <List 
+         disablePadding
+         sx={{
+            width: sidebarWidth,
+            height: '100vh',
+            backgroundColor: assets.colors.secondary
+         }}
+        >
+            <ListItemButton>
+                <Box sx={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                }}>
+                    <Typography variant='body2' fontWeight='700'>
+                        {user.username}
+                    </Typography>  
+                    <IconButton onClick={logout}>
+                        <LogoutOutlinedIcon fontSize='small'/>
+                    </IconButton>
+                </Box>
+            </ListItemButton>
+        </List>
+       </Drawer>
     )
 }
 
