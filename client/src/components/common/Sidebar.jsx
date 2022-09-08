@@ -1,17 +1,54 @@
 import { useSelector, useDispatch } from 'react-redux'
-import { Box, Drawer, List, IconButton, ListItemButton, Typography } from '@mui/material'
+import { Box, Drawer, IconButton, List, ListItem, ListItemButton, Typography } from '@mui/material'
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined'
-import { useNavigate } from 'react-router-dom'
+import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
+import { useNavigate, useParams } from 'react-router-dom'
 import assets from '../../assets/index'
+import { useEffect, useState } from 'react'
+import boardApi from '../../api/boardApi'
+import { setBoards } from '../../redux/features/boardSlice'
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 
 const Sidebar = () => {
     const user = useSelector((state) => state.user.value)
+    const boards = useSelector((state) => state.board.value)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const { boardId } = useParams() 
+    const [activeIndex, setActiveIndex] = useState(0)
     const sidebarWidth = 250
+
+    useEffect(() => {
+        const getBoards = async () => {
+            try {
+                const res = await boardApi.getAll()
+                dispatch(setBoards(res))
+                if (res.length > 0 && boardId === undefined) {
+                    navigate(`/boards/${res[0].id}`)
+                }
+            } catch (err) {
+                alert(err)
+            }
+        }
+        getBoards()
+    }, [])
+
+     useEffect(() => {
+        updateActive(boards)
+    }, [boards])
+
+    const updateActive = (listBoards) => {
+        const activeItem = listBoards.findIndex(e => e.id === boardId)
+        setActiveIndex(activeItem)
+    }
 
     const logout = () => {
         localStorage.removeItem('token')
         navigate('/login')
+    }
+
+    const onDragEnd = () => {
+
     }
 
     return (
@@ -33,7 +70,7 @@ const Sidebar = () => {
             backgroundColor: assets.colors.secondary
          }}
         >
-            <ListItemButton>
+            <ListItem>
                 <Box sx={{
                     width: '100%',
                     display: 'flex',
@@ -47,7 +84,51 @@ const Sidebar = () => {
                         <LogoutOutlinedIcon fontSize='small'/>
                     </IconButton>
                 </Box>
-            </ListItemButton>
+            </ListItem>
+            <Box sx={{ paddingTop: '10px' }}/>
+            <ListItem>
+                <Box sx={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                }}>
+                    <Typography variant='body2' fontWeight='700'>
+                        Favourites 
+                    </Typography>  
+                </Box>
+            </ListItem>
+            <Box sx={{ paddingTop: '10px' }}/>
+             <ListItem>
+                <Box sx={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                }}>
+                    <Typography variant='body2' fontWeight='700'>
+                        Private 
+                    </Typography>  
+                    <IconButton>
+                        <AddBoxOutlinedIcon fontSize='small'/>
+                    </IconButton>
+                </Box>
+            </ListItem>
+            <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable key={'list-board-droppable'} droppableId={'list-board-droppable'}>
+                    {(provided) => (
+                        <div ref={provided.innerRef} {...provided.droppableProps}>
+                            {
+                                boards.map((item, index) => (
+                                 <Draggable key={item.id} draggableId={item.id} index={index}>
+
+                                 </Draggable>   
+                                ))
+                            }
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
         </List>
        </Drawer>
     )
