@@ -3,7 +3,7 @@ import StarBorderOutlinedIcon from '@mui/icons-material/StarBorderOutlined'
 import StarOutlinedIcon from '@mui/icons-material/StarOutlined'
 import { Box, Button, Divider, IconButton, TextField, Typography } from'@mui/material'
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import boardApi from '../api/boardApi'
 import EmojiPicker from '../components/common/EmojiPicker'
 import {useDispatch, useSelector} from 'react-redux'
@@ -15,6 +15,7 @@ const timeout = 500
 
 const Board = () => {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const { boardId } = useParams()
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
@@ -104,8 +105,35 @@ const Board = () => {
 
     const addFavourite = async () => {
         try {
-            await boardApi.update(boardId, { favourite: !isFavourite })
+            const board = await boardApi.update(boardId, { favourite: !isFavourite })
+            let newFavouriteList = [...favouriteList]
+            if (isFavourite) {
+                newFavouriteList = newFavouriteList.filter(e => e.id !== boardId)
+            } else {
+                newFavouriteList.unshift(board)
+            }
+            dispatch(setFavouriteList(newFavouriteList))
             setIsFavourite(!isFavourite)
+        } catch (err) {
+            alert(err)
+        }
+    }
+
+    const deleteBoard = async () => {
+        try {
+            await boardApi.delete(boardId)
+            if (isFavourite) {
+                const newFavouriteList = favouriteList.filter(e => e.id !== boardId)
+                dispatch(setFavouriteList(newFavouriteList))
+            }
+
+            const newList = boards.filter(e => e.id !== boardId)
+            if (newList.length === 0) {
+                navigate('/boards')
+            } else {
+                navigate(`/boards/${newList[0].id}`)
+            }
+            dispatch(setBoards(newList))
         } catch (err) {
             alert(err)
         }
@@ -128,7 +156,7 @@ const Board = () => {
                     )
                 }
             </IconButton>
-            <IconButton variant='outlined' color='error'>
+            <IconButton variant='outlined' color='error' onClick={deleteBoard}>
                 <DeleteOutlinedIcon />
             </IconButton>
         </Box>
