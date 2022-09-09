@@ -1,4 +1,3 @@
-const board = require("../models/board");
 const Board = require("../models/board");
 const Section = require("../models/section");
 const Task = require("../models/task");
@@ -68,7 +67,7 @@ exports.update = async (req, res) => {
     if (!currentBoard) return res.status(404).json("Board not found");
 
     if (favourite !== undefined && currentBoard.favourite !== favourite) {
-      const favourites = await board.find({
+      const favourites = await Board.find({
         user: currentBoard.user,
         favourite: true,
         _id: { $ne: boardId },
