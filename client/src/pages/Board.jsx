@@ -8,6 +8,7 @@ import boardApi from '../api/boardApi'
 import EmojiPicker from '../components/common/EmojiPicker'
 import {useDispatch, useSelector} from 'react-redux'
 import { setBoards } from '../redux/features/boardSlice'
+import { setFavouriteList } from '../redux/features/favouriteSlice'
 
 let timer
 const timeout = 500 
@@ -22,6 +23,7 @@ const Board = () => {
     const [icon, setIcon] = useState('')
 
     const boards = useSelector((state) => state.board.value)
+    const favouriteList = useSelector((state) => state.favourites.value)
 
     useEffect(() => {
         const getBoard = async () => {
@@ -43,6 +45,14 @@ const Board = () => {
         let temp = [...boards]
         const index = temp.findIndex(e => e.id === boardId)
         temp[index] = {...temp[index], icon: newIcon }
+
+          if (isFavourite) {
+          let tempFavourite = [...favouriteList]
+          const favouriteIndex = tempFavourite.findIndex(e => e.id === boardId)
+          tempFavourite[favouriteIndex] = {...tempFavourite[favouriteIndex], icon: newIcon } 
+          dispatch(setFavouriteList(tempFavourite)) 
+        }
+
         setIcon(newIcon)
         dispatch(setBoards(temp))
         try {
@@ -60,6 +70,14 @@ const Board = () => {
         let temp = [...boards]
         const index = temp.findIndex(e => e.id === boardId)
         temp[index] = {...temp[index], title: newTitle }
+
+        if (isFavourite) {
+          let tempFavourite = [...favouriteList]
+          const favouriteIndex = tempFavourite.findIndex(e => e.id === boardId)
+          tempFavourite[favouriteIndex] = {...tempFavourite[favouriteIndex], title: newTitle } 
+          dispatch(setFavouriteList(tempFavourite)) 
+        }
+
         dispatch(setBoards(temp))
 
         timer = setTimeout(async () => {

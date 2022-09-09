@@ -91,3 +91,15 @@ exports.update = async (req, res) => {
     res.status(500).json(err);
   }
 };
+
+exports.getFavourites = async (req, res) => {
+  try {
+    const favourites = await Board.find({
+      user: req.user._id,
+      favourite: true,
+    }).sort("-favouritePosition");
+    res.status(200).json(favourites);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
