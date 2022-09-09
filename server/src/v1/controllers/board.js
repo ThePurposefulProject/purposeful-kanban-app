@@ -44,7 +44,7 @@ exports.getOne = async (req, res) => {
     if (!board) return res.status(404).json("Board not found");
     const sections = await Section.find({ board: boardId });
     for (const section of sections) {
-      const tasks = await Task.find({ section: sectionId })
+      const tasks = await Task.find({ section: section.id })
         .populate("section")
         .sort("-position");
       section._doc.tasks = tasks;
@@ -104,6 +104,21 @@ exports.getFavourites = async (req, res) => {
   }
 };
 
+exports.updateFavouritePosition = async (req, res) => {
+  const { boards } = req.body;
+  try {
+    for (const key in boards.reverse()) {
+      const board = boards[key];
+      await Board.findByIdAndUpdate(board.id, {
+        $set: { favouritePosition: key },
+      });
+    }
+    res.status(200).json("updated");
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
 exports.delete = async (req, res) => {
   const { boardId } = req.params;
   try {
@@ -112,6 +127,7 @@ exports.delete = async (req, res) => {
       await Task.deleteMany({ section: section.id });
     }
     await Section.deleteMany({ board: boardId });
+
     const currentBoard = await Board.findById(boardId);
 
     if (currentBoard.favourite) {
