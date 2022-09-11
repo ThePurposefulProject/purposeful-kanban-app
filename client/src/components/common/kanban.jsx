@@ -1,9 +1,12 @@
-import { Box, Button, Typography, Divider, TextField, IconButton } from '@mui/material'
+import { Box, Button, Typography, Divider, TextField, IconButton, Card } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import sectionApi from '../../api/sectionApi'
+
+let timer
+const timeout = 500 
 
 const Kanban = props => {
     const boardId = props.boardId
@@ -32,6 +35,26 @@ const Kanban = props => {
         } catch (err) {
             alert(err)
         }
+    }
+
+    const updateSectionTitle = async (e, sectionId) => {
+        clearTimeout(timer)
+        const newTitle = e.target.value
+        const newData = [...data]
+        const index = newData.findIndex(e => e.id === sectionId)
+        newData[index].title = newTitle 
+        setData(newData)
+        timer = setTimeout(async () => {
+            try {
+                await sectionApi.update(boardId, sectionId, { title: newTitle })
+            } catch (err) {
+                alert(err)
+            }
+        }, timeout)
+    }
+
+    const createTask = async (sectionId) => {
+
     }
 
     return (
@@ -74,6 +97,7 @@ const Kanban = props => {
                                             }}>
                                                 <TextField
                                                 value={section.title}
+                                                onChange={(e) => updateSectionTitle(e, section.id)}
                                                 placeholder='Untitled'
                                                 variant='outlined'
                                                 sx={{
@@ -90,6 +114,7 @@ const Kanban = props => {
                                                     color: 'gray',
                                                     '&:hover': {color: 'green'}
                                                 }}
+                                                onClick={() => createTask(section.id)}
                                                 >
                                                     <AddOutlinedIcon/>
                                                 </IconButton>
@@ -106,13 +131,35 @@ const Kanban = props => {
                                                 </IconButton>
                                             </Box>
                                             {/* tasks */}
+                                            {
+                                            section.tasks.map((task, index) => (
+                                              <Draggable key={task.id} draggableId={task.id} index={index}>
+                                                {(provided, snapshot) => (
+                                                    <Card
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                    sx={{
+                                                     padding: '10px',
+                                                     marginBottom: '10px',
+                                                     cursor: snapshot.isDragging ? 'grab' : 'pointer!important'    
+                                                    }} 
+                                                    >
+                                                       <Typography>
+                                                        {task.title === '' ? 'untitled' : task.title}
+                                                        </Typography> 
+                                                    </Card>
+                                                )}
+                                              </Draggable>
+                                            ))
+                                            }
                                         </Box>
                                     )}
                                 </Droppable>
                             </div>
                         ))
-
                     }
+                    {provided.placeholder}
                 </Box>
             </DragDropContext>
         </>

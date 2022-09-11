@@ -1,7 +1,7 @@
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import StarBorderOutlinedIcon from '@mui/icons-material/StarBorderOutlined'
 import StarOutlinedIcon from '@mui/icons-material/StarOutlined'
-import { Box, Button, Divider, IconButton, TextField, Typography } from'@mui/material'
+import { Box,IconButton, TextField } from'@mui/material'
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import boardApi from '../api/boardApi'
