@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import boardApi from '../api/boardApi'
 import EmojiPicker from '../components/common/EmojiPicker'
 import {useDispatch, useSelector} from 'react-redux'
+import Kanban from '../components/common/Kanban'
 import { setBoards } from '../redux/features/boardSlice'
 import { setFavouriteList } from '../redux/features/favouriteSlice'
 
@@ -191,20 +192,8 @@ const Board = () => {
             />
             </Box>
             <Box>
-          <Box sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
-          }}>
-            <Button>
-                Add section
-            </Button>
-            <Typography variant='body2' fontWeight='700'>
-                {sections.length} Sections 
-            </Typography>
-            </Box>  
-            <Divider sx={{ margin: '1opx 0' }} />
             {/* Kanban Board */}
+            <Kanban data={sections} boardId={boardId} / > 
         </Box>
         </Box>
         </>

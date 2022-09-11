@@ -1,4 +1,5 @@
 const router = require("express").Router({ mergeParams: true });
+const { param } = require("express-validator");
 const tokenHandler = require("../handlers/tokenHandler");
 const sectionController = require("../controllers/section");
 const validation = require("../handlers/validation");
