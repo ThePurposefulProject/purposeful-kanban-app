@@ -5,7 +5,7 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import sectionApi from '../../api/sectionApi'
 import taskApi from '../../api/taskApi'
-// import TaskModal from './TaskModal'
+import TaskModal from './TaskModal'
 
 let timer
 const timeout = 500
@@ -13,7 +13,7 @@ const timeout = 500
 const Kanban = props => {
   const boardId = props.boardId
   const [data, setData] = useState([])
-//   const [selectedTask, setSelectedTask] = useState(undefined)
+  const [selectedTask, setSelectedTask] = useState(undefined)
 
   useEffect(() => {
     setData(props.data)
@@ -103,21 +103,21 @@ const Kanban = props => {
     }
   }
 
-//   const onUpdateTask = (task) => {
-//     const newData = [...data]
-//     const sectionIndex = newData.findIndex(e => e.id === task.section.id)
-//     const taskIndex = newData[sectionIndex].tasks.findIndex(e => e.id === task.id)
-//     newData[sectionIndex].tasks[taskIndex] = task
-//     setData(newData)
-//   }
+  const onUpdateTask = (task) => {
+    const newData = [...data]
+    const sectionIndex = newData.findIndex(e => e.id === task.section.id)
+    const taskIndex = newData[sectionIndex].tasks.findIndex(e => e.id === task.id)
+    newData[sectionIndex].tasks[taskIndex] = task
+    setData(newData)
+  }
 
-//   const onDeleteTask = (task) => {
-//     const newData = [...data]
-//     const sectionIndex = newData.findIndex(e => e.id === task.section.id)
-//     const taskIndex = newData[sectionIndex].tasks.findIndex(e => e.id === task.id)
-//     newData[sectionIndex].tasks.splice(taskIndex, 1)
-//     setData(newData)
-//   }
+  const onDeleteTask = (task) => {
+    const newData = [...data]
+    const sectionIndex = newData.findIndex(e => e.id === task.section.id)
+    const taskIndex = newData[sectionIndex].tasks.findIndex(e => e.id === task.id)
+    newData[sectionIndex].tasks.splice(taskIndex, 1)
+    setData(newData)
+  }
 
   return (
     <>
@@ -206,7 +206,7 @@ const Kanban = props => {
                                   marginBottom: '10px',
                                   cursor: snapshot.isDragging ? 'grab' : 'pointer!important'
                                 }}
-                                // onClick={() => setSelectedTask(task)}
+                                onClick={() => setSelectedTask(task)}
                               >
                                 <Typography>
                                   {task.title === '' ? 'Untitled' : task.title}
@@ -225,13 +225,13 @@ const Kanban = props => {
           }
         </Box>
       </DragDropContext>
-      {/* <TaskModal
+      <TaskModal
         task={selectedTask}
         boardId={boardId}
         onClose={() => setSelectedTask(undefined)}
         onUpdate={onUpdateTask}
         onDelete={onDeleteTask}
-      /> */}
+      />
     </>
   )
 }
