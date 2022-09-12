@@ -161,6 +161,11 @@ const Sidebar = () => {
             )}
           </Droppable>
         </DragDropContext>
+     <img src={assets.images.logoDark} style={{ width: '249px', position: 'absolute',
+  bottom: 0,
+  right: 1,
+  left: 1, 
+ }} alt='app logo'/>
       </List>
     </Drawer>
   )
