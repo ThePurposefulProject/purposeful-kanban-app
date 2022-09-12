@@ -1,5 +1,5 @@
 import { Backdrop, Fade, IconButton, Modal, Box, TextField, Typography, Divider } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import Moment from 'moment'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
@@ -30,12 +30,27 @@ const TaskModal = props => {
     const [task, setTask] = useState(props.task)
     const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
+    const editorWrapperRef = useRef()
 
     useEffect(() => {
         setTask(props.task)
         setTitle(props.task !== undefined ? props.task.title : '')
         setContent(props.task !== undefined ? props.task.content : '')
+        if (props.task !== undefined) {
+            isModalClosed = false 
+
+            updateEditorHeight()
+        }
     }, [props.task])
+
+    const updateEditorHeight = () => {
+        setTimeout(() => {
+                if (editorWrapperRef.current) {
+                    const box = editorWrapperRef.current
+                    box.querySelector('.ck-editor__editable_inline').style.height = (box.offsetHeight - 50) + 'px'
+                }
+            }, timeout)
+    }
 
     const onClose = () => {
         isModalClosed = true 
@@ -133,6 +148,7 @@ const TaskModal = props => {
                     </Typography>
                     <Divider sx={{ margin: '1.5rem 0'}}/>
                     <Box
+                    ref={editorWrapperRef}
                     sx={{
                         height: '80%',
                         overflowX: 'hidden',
@@ -143,6 +159,8 @@ const TaskModal = props => {
                         editor={ClassicEditor}
                         data={content}
                         onChange={updateContent}
+                        onFocus={updateEditorHeight}
+                        onBlur={updateEditorHeight}
                         />
                     </Box>
                     </Box>
